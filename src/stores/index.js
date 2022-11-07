@@ -5,10 +5,13 @@ import {
   collection,
   getDocs,
   updateDoc,
+  addDoc,
   getDoc,
   doc,
   setDoc,
   deleteDoc,
+  onSnapshot,
+  orderBy
 } from "firebase/firestore";
 
 const firebaseConfig = {
@@ -27,6 +30,83 @@ const db = getFirestore(app);
 
 export const useStore = defineStore({
     id: "main",
-    state: () => ({}),
-    actions: {},
+    state: () => ({
+      counter: 0,
+      store: [],
+      length_store: 0,
+    }),
+    actions: {
+      async increment() {
+        // let id;
+        // if(this.store.length == 0) {
+        //   id = 0;
+        // }
+        // if (this.store.length > 0) {
+        //   for (let i = 0; i < this.store.length; i++) {
+        //     id = this.store[i].id + 1;
+        //   }
+        // }
+        await addDoc(collection(db, "store"), {
+          // id: id,
+          counter: 1,
+        });
+        console.log("Added successfully");
+        // await setDoc(doc(db, "store", id.toString()), {
+        //   id: id,
+        //   counter: 1,
+        // });
+      },
+      async getCounter() {
+        onSnapshot(collection(db, "store"), (querySnapshot) => {
+          let store = [];
+          querySnapshot.forEach((doc) => {
+            store.push({
+              data: doc.data(),
+              id: doc.id
+            })
+          });
+          this.store = store;
+          // this.OrderById();
+        });
+      },
+      OrderById() {
+        let arr = [];
+        for (let i = 0; i < this.store.length; i++) {
+          arr.push(this.store[i].id);
+        }
+        arr = arr.sort((a, b) => a - b);
+        let store = [];
+        for (let i = 0; i < arr.length; i++) {
+          for (let j = 0; j < this.store.length; j++) {
+            if (arr[i] == this.store[j].id) {
+              store.push(this.store[j]);
+            }
+          }
+        }
+        this.store = store;
+      },
+      getLength() {
+        return this.store.length;
+      },
+      async DeleteCounter(id_counter) {
+        await deleteDoc(doc(db, "store", id_counter.toString()));
+        console.log("Delete successfully");
+      },
+      async IncreaseSubCounter(id_counter) {
+        let id = this.store.findIndex((item) => item.id == id_counter);
+        let counter = this.store[id].data.counter++;
+        await updateDoc(doc(db, "store", id_counter.toString()), {
+          counter: counter
+        });
+        console.log("Increment successfully");
+      },
+      async DecreaseSubCounter(id_counter) {
+        let id = this.store.findIndex((item) => item.id == id_counter);
+        let counter = this.store[id].data.counter--;
+        await updateDoc(doc(db, "store", id_counter.toString()), {
+          counter: counter
+        });
+        console.log("Decrement successfully");
+      }
+    },
 });
