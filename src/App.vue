@@ -7,7 +7,10 @@
       <ul>
         <li v-for="(item, index) in store.store" :key="index">
           id: {{ item.id }} || counter: {{ item.data.counter }}
-          <button class="bg-slate-300 my-1" @click="store.DeleteCounter(item.id)">
+          <button
+            class="bg-slate-300 my-1"
+            @click="store.DeleteCounter(item.id)"
+          >
             Delete
           </button>
           <button
