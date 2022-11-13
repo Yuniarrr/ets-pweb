@@ -3,7 +3,6 @@
     <label for="list">List {{ length }}</label>
     <button @click="store.increment()" class="ml-2 bg-slate-300">+</button>
     <div>
-      <label for="beforeSort">Before Sort</label>
       <ul>
         <li v-for="(item, index) in store.store" :key="index">
           id: {{ item.id }} || counter: {{ item.data.counter }}
@@ -29,7 +28,6 @@
       </ul>
     </div>
   </div>
-  <div>{{ store.store }}</div>
 </template>
 
 <script>
